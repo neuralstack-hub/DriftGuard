@@ -1,0 +1,79 @@
+{
+  "active_version": "v1",
+  "previous_approved_version": "v4",
+  "versions": [
+    {
+      "version": "v1",
+      "trained_at": "2026-11-18T18:19:01.231678+00:00",
+      "metrics": {
+        "mae": 45.2569,
+        "rmse": 66.1861,
+        "r2": 0.4992
+      },
+      "status": "active",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v1.joblib",
+      "training_samples": 24418,
+      "notes": "Initial baseline RandomForestRegressor trained on 2010-2012 reference data"
+    },
+    {
+      "version": "v2",
+      "trained_at": "2026-11-18T18:24:12.192833+00:00",
+      "metrics": {
+        "mae": 60.7122,
+        "rmse": 83.7966,
+        "r2": 0.1972
+      },
+      "status": "rejected",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v2.joblib",
+      "training_samples": 33096,
+      "notes": "Auto-rejected: RMSE 83.7966 >= 66.1861"
+    },
+    {
+      "version": "v3",
+      "trained_at": "2026-11-18T18:25:35.068931+00:00",
+      "metrics": {
+        "mae": 45.5289,
+        "rmse": 67.2544,
+        "r2": 0.4829
+      },
+      "status": "rejected",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v3.joblib",
+      "training_samples": 33096,
+      "notes": "Auto-rejected: RMSE 67.2544 >= 66.1861"
+    },
+    {
+      "version": "v4",
+      "trained_at": "2026-11-18T18:25:40.647141+00:00",
+      "metrics": {
+        "mae": 45.5289,
+        "rmse": 67.2544,
+        "r2": 0.4829
+      },
+      "status": "archived",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v4.joblib",
+      "training_samples": 33096,
+      "notes": "Manually promoted via dashboard"
+    },
+    {
+      "version": "v5",
+      "trained_at": "2026-11-18T18:32:22.256048+00:00",
+      "metrics": {
+        "mae": 45.5289,
+        "rmse": 67.2544,
+        "r2": 0.4829
+      },
+      "status": "rejected",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v5.joblib",
+      "training_samples": 33096,
+      "notes": "Auto-rejected: RMSE 67.2544 >= 66.1861"
+    }
+  ],
+  "rollback_history": [
+    {
+      "timestamp": "2026-11-18T18:26:36.285412+00:00",
+      "from_version": "v4",
+      "to_version": "v1",
+      "reason": "Dashboard rollback"
+    }
+  ]
+}

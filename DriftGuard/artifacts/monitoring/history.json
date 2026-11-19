@@ -1,0 +1,496 @@
+{
+  "drift_history": [
+    {
+      "timestamp": "2026-11-18T18:23:27.386552+00:00",
+      "dataset_drift_detected": false,
+      "drift_score": 0.0,
+      "drift_threshold": 0.3,
+      "drifted_features_count": 0,
+      "total_features_monitored": 6,
+      "reference_samples": 24418,
+      "current_samples": 500,
+      "features": [
+        {
+          "feature": "DEWP",
+          "ks_statistic": 0.0552,
+          "p_value": 0.097478,
+          "psi": 0.0311,
+          "wasserstein_distance": 1.2945,
+          "reference_mean": 1.78,
+          "current_mean": 0.486,
+          "reference_std": 14.552,
+          "current_std": 14.772,
+          "drift_detected": false
+        },
+        {
+          "feature": "TEMP",
+          "ks_statistic": 0.0354,
+          "p_value": 0.559326,
+          "psi": 0.0174,
+          "wasserstein_distance": 0.6191,
+          "reference_mean": 11.944,
+          "current_mean": 12.072,
+          "reference_std": 12.384,
+          "current_std": 11.963,
+          "drift_detected": false
+        },
+        {
+          "feature": "PRES",
+          "ks_statistic": 0.0486,
+          "p_value": 0.190534,
+          "psi": 0.0447,
+          "wasserstein_distance": 0.9071,
+          "reference_mean": 1016.605,
+          "current_mean": 1015.918,
+          "reference_std": 10.406,
+          "current_std": 10.905,
+          "drift_detected": false
+        },
+        {
+          "feature": "Iws",
+          "ks_statistic": 0.0654,
+          "p_value": 0.028767,
+          "psi": 0.0501,
+          "wasserstein_distance": 5.3525,
+          "reference_mean": 26.426,
+          "current_mean": 23.21,
+          "reference_std": 52.03,
+          "current_std": 55.064,
+          "drift_detected": false
+        },
+        {
+          "feature": "Is",
+          "ks_statistic": 0.005,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0479,
+          "reference_mean": 0.07,
+          "current_mean": 0.022,
+          "reference_std": 0.885,
+          "current_std": 0.278,
+          "drift_detected": false
+        },
+        {
+          "feature": "Ir",
+          "ks_statistic": 0.0168,
+          "p_value": 0.998714,
+          "psi": 0.0,
+          "wasserstein_distance": 0.061,
+          "reference_mean": 0.229,
+          "current_mean": 0.192,
+          "reference_std": 1.608,
+          "current_std": 1.51,
+          "drift_detected": false
+        }
+      ],
+      "note": "Data drift indicates input distribution shift; model performance degradation requires labelled validation.",
+      "evidently_used": false,
+      "source": "production_stream"
+    },
+    {
+      "timestamp": "2026-11-18T18:24:11.912998+00:00",
+      "dataset_drift_detected": true,
+      "drift_score": 0.6667,
+      "drift_threshold": 0.3,
+      "drifted_features_count": 4,
+      "total_features_monitored": 6,
+      "reference_samples": 24418,
+      "current_samples": 500,
+      "features": [
+        {
+          "feature": "DEWP",
+          "ks_statistic": 0.2378,
+          "p_value": 0.0,
+          "psi": 0.9698,
+          "wasserstein_distance": 8.5679,
+          "reference_mean": 1.78,
+          "current_mean": 10.348,
+          "reference_std": 14.552,
+          "current_std": 14.356,
+          "drift_detected": true
+        },
+        {
+          "feature": "TEMP",
+          "ks_statistic": 0.3584,
+          "p_value": 0.0,
+          "psi": 1.1244,
+          "wasserstein_distance": 11.6962,
+          "reference_mean": 11.944,
+          "current_mean": 23.64,
+          "reference_std": 12.384,
+          "current_std": 11.903,
+          "drift_detected": true
+        },
+        {
+          "feature": "PRES",
+          "ks_statistic": 0.4812,
+          "p_value": 0.0,
+          "psi": 2.2838,
+          "wasserstein_distance": 15.0005,
+          "reference_mean": 1016.605,
+          "current_mean": 1001.604,
+          "reference_std": 10.406,
+          "current_std": 10.558,
+          "drift_detected": true
+        },
+        {
+          "feature": "Iws",
+          "ks_statistic": 0.6985,
+          "p_value": 0.0,
+          "psi": 5.304,
+          "wasserstein_distance": 43.8944,
+          "reference_mean": 26.426,
+          "current_mean": 70.32,
+          "reference_std": 52.03,
+          "current_std": 98.103,
+          "drift_detected": true
+        },
+        {
+          "feature": "Is",
+          "ks_statistic": 0.0035,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0265,
+          "reference_mean": 0.07,
+          "current_mean": 0.072,
+          "reference_std": 0.885,
+          "current_std": 0.92,
+          "drift_detected": false
+        },
+        {
+          "feature": "Ir",
+          "ks_statistic": 0.0068,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0545,
+          "reference_mean": 0.229,
+          "current_mean": 0.176,
+          "reference_std": 1.608,
+          "current_std": 1.11,
+          "drift_detected": false
+        }
+      ],
+      "note": "Data drift indicates input distribution shift; model performance degradation requires labelled validation.",
+      "evidently_used": false,
+      "source": "simulation(intensity=1.2)"
+    },
+    {
+      "timestamp": "2026-11-18T18:25:32.750616+00:00",
+      "dataset_drift_detected": true,
+      "drift_score": 0.6667,
+      "drift_threshold": 0.3,
+      "drifted_features_count": 4,
+      "total_features_monitored": 6,
+      "reference_samples": 24418,
+      "current_samples": 500,
+      "features": [
+        {
+          "feature": "DEWP",
+          "ks_statistic": 0.2378,
+          "p_value": 0.0,
+          "psi": 0.9698,
+          "wasserstein_distance": 8.5679,
+          "reference_mean": 1.78,
+          "current_mean": 10.348,
+          "reference_std": 14.552,
+          "current_std": 14.356,
+          "drift_detected": true
+        },
+        {
+          "feature": "TEMP",
+          "ks_statistic": 0.3584,
+          "p_value": 0.0,
+          "psi": 1.1244,
+          "wasserstein_distance": 11.6962,
+          "reference_mean": 11.944,
+          "current_mean": 23.64,
+          "reference_std": 12.384,
+          "current_std": 11.903,
+          "drift_detected": true
+        },
+        {
+          "feature": "PRES",
+          "ks_statistic": 0.4812,
+          "p_value": 0.0,
+          "psi": 2.2838,
+          "wasserstein_distance": 15.0005,
+          "reference_mean": 1016.605,
+          "current_mean": 1001.604,
+          "reference_std": 10.406,
+          "current_std": 10.558,
+          "drift_detected": true
+        },
+        {
+          "feature": "Iws",
+          "ks_statistic": 0.6985,
+          "p_value": 0.0,
+          "psi": 5.304,
+          "wasserstein_distance": 43.8944,
+          "reference_mean": 26.426,
+          "current_mean": 70.32,
+          "reference_std": 52.03,
+          "current_std": 98.103,
+          "drift_detected": true
+        },
+        {
+          "feature": "Is",
+          "ks_statistic": 0.0035,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0265,
+          "reference_mean": 0.07,
+          "current_mean": 0.072,
+          "reference_std": 0.885,
+          "current_std": 0.92,
+          "drift_detected": false
+        },
+        {
+          "feature": "Ir",
+          "ks_statistic": 0.0068,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0545,
+          "reference_mean": 0.229,
+          "current_mean": 0.176,
+          "reference_std": 1.608,
+          "current_std": 1.11,
+          "drift_detected": false
+        }
+      ],
+      "note": "Data drift indicates input distribution shift; model performance degradation requires labelled validation.",
+      "evidently_used": false,
+      "source": "simulation(intensity=1.2)"
+    },
+    {
+      "timestamp": "2026-11-18T18:25:38.176171+00:00",
+      "dataset_drift_detected": true,
+      "drift_score": 0.6667,
+      "drift_threshold": 0.3,
+      "drifted_features_count": 4,
+      "total_features_monitored": 6,
+      "reference_samples": 24418,
+      "current_samples": 500,
+      "features": [
+        {
+          "feature": "DEWP",
+          "ks_statistic": 0.2378,
+          "p_value": 0.0,
+          "psi": 0.9698,
+          "wasserstein_distance": 8.5679,
+          "reference_mean": 1.78,
+          "current_mean": 10.348,
+          "reference_std": 14.552,
+          "current_std": 14.356,
+          "drift_detected": true
+        },
+        {
+          "feature": "TEMP",
+          "ks_statistic": 0.3584,
+          "p_value": 0.0,
+          "psi": 1.1244,
+          "wasserstein_distance": 11.6962,
+          "reference_mean": 11.944,
+          "current_mean": 23.64,
+          "reference_std": 12.384,
+          "current_std": 11.903,
+          "drift_detected": true
+        },
+        {
+          "feature": "PRES",
+          "ks_statistic": 0.4812,
+          "p_value": 0.0,
+          "psi": 2.2838,
+          "wasserstein_distance": 15.0005,
+          "reference_mean": 1016.605,
+          "current_mean": 1001.604,
+          "reference_std": 10.406,
+          "current_std": 10.558,
+          "drift_detected": true
+        },
+        {
+          "feature": "Iws",
+          "ks_statistic": 0.6985,
+          "p_value": 0.0,
+          "psi": 5.304,
+          "wasserstein_distance": 43.8944,
+          "reference_mean": 26.426,
+          "current_mean": 70.32,
+          "reference_std": 52.03,
+          "current_std": 98.103,
+          "drift_detected": true
+        },
+        {
+          "feature": "Is",
+          "ks_statistic": 0.0035,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0265,
+          "reference_mean": 0.07,
+          "current_mean": 0.072,
+          "reference_std": 0.885,
+          "current_std": 0.92,
+          "drift_detected": false
+        },
+        {
+          "feature": "Ir",
+          "ks_statistic": 0.0068,
+          "p_value": 1.0,
+          "psi": 0.0,
+          "wasserstein_distance": 0.0545,
+          "reference_mean": 0.229,
+          "current_mean": 0.176,
+          "reference_std": 1.608,
+          "current_std": 1.11,
+          "drift_detected": false
+        }
+      ],
+      "note": "Data drift indicates input distribution shift; model performance degradation requires labelled validation.",
+      "evidently_used": false,
+      "source": "simulation(intensity=1.2)"
+    }
+  ],
+  "retraining_history": [
+    {
+      "timestamp": "2026-11-18T18:24:12.241177+00:00",
+      "trigger_reason": "drift_detected(score=0.6667)",
+      "previous_active_version": "v1",
+      "candidate_version": "v2",
+      "candidate_metrics": {
+        "mae": 60.7122,
+        "rmse": 83.7966,
+        "r2": 0.1972
+      },
+      "active_metrics_on_fixed_val": {
+        "mae": 45.2569,
+        "rmse": 66.1861,
+        "r2": 0.4992
+      },
+      "decision": "rejected",
+      "promoted": false
+    },
+    {
+      "timestamp": "2026-11-18T18:25:35.135872+00:00",
+      "trigger_reason": "drift_detected(score=0.6667)",
+      "previous_active_version": "v1",
+      "candidate_version": "v3",
+      "candidate_metrics": {
+        "mae": 45.5289,
+        "rmse": 67.2544,
+        "r2": 0.4829
+      },
+      "active_metrics_on_fixed_val": {
+        "mae": 45.2569,
+        "rmse": 66.1861,
+        "r2": 0.4992
+      },
+      "decision": "rejected",
+      "promoted": false
+    },
+    {
+      "timestamp": "2026-11-18T18:25:40.712248+00:00",
+      "trigger_reason": "drift_detected(score=0.6667)",
+      "previous_active_version": "v1",
+      "candidate_version": "v4",
+      "candidate_metrics": {
+        "mae": 45.5289,
+        "rmse": 67.2544,
+        "r2": 0.4829
+      },
+      "active_metrics_on_fixed_val": {
+        "mae": 45.2569,
+        "rmse": 66.1861,
+        "r2": 0.4992
+      },
+      "decision": "rejected",
+      "promoted": false
+    },
+    {
+      "timestamp": "2026-11-18T18:32:22.292827+00:00",
+      "trigger_reason": "manual_retrain",
+      "previous_active_version": "v1",
+      "candidate_version": "v5",
+      "candidate_metrics": {
+        "mae": 45.5289,
+        "rmse": 67.2544,
+        "r2": 0.4829
+      },
+      "active_metrics_on_fixed_val": {
+        "mae": 45.2569,
+        "rmse": 66.1861,
+        "r2": 0.4992
+      },
+      "decision": "rejected",
+      "promoted": false
+    }
+  ],
+  "deployment_logs": [
+    {
+      "timestamp": "2026-11-18T18:19:01.232217+00:00",
+      "version": "v1",
+      "action": "deploy_initial",
+      "details": "Deployed initial Model v1 (RMSE=66.1861, R2=0.4992)"
+    },
+    {
+      "timestamp": "2026-11-18T18:24:12.240053+00:00",
+      "version": "v1",
+      "action": "reject_candidate",
+      "details": "Rejected v2 (RMSE 83.7966); retained v1"
+    },
+    {
+      "timestamp": "2026-11-18T18:25:35.134108+00:00",
+      "version": "v1",
+      "action": "reject_candidate",
+      "details": "Rejected v3 (RMSE 67.2544); retained v1"
+    },
+    {
+      "timestamp": "2026-11-18T18:25:40.710278+00:00",
+      "version": "v1",
+      "action": "reject_candidate",
+      "details": "Rejected v4 (RMSE 67.2544); retained v1"
+    },
+    {
+      "timestamp": "2026-11-18T18:26:26.698007+00:00",
+      "version": "v4",
+      "action": "manual_promote",
+      "details": "Manually promoted v4 to active production"
+    },
+    {
+      "timestamp": "2026-11-18T18:26:36.288022+00:00",
+      "version": "v1",
+      "action": "rollback",
+      "details": "Rolled back from v4 to v1: Dashboard rollback"
+    },
+    {
+      "timestamp": "2026-11-18T18:32:22.290281+00:00",
+      "version": "v1",
+      "action": "reject_candidate",
+      "details": "Rejected v5 (RMSE 67.2544); retained v1"
+    }
+  ],
+  "github_actions_runs": [
+    {
+      "timestamp": "2026-11-18T18:24:12.286447+00:00",
+      "event_type": "drift-detected",
+      "status": "skipped_unconfigured",
+      "message": "GITHUB_TOKEN or GITHUB_OWNER not set in .env; executed local pipeline instead."
+    },
+    {
+      "timestamp": "2026-11-18T18:25:35.197798+00:00",
+      "event_type": "drift-detected",
+      "status": "skipped_unconfigured",
+      "message": "GITHUB_TOKEN or GITHUB_OWNER not set in .env; executed local pipeline instead."
+    },
+    {
+      "timestamp": "2026-11-18T18:25:40.780769+00:00",
+      "event_type": "drift-detected",
+      "status": "skipped_unconfigured",
+      "message": "GITHUB_TOKEN or GITHUB_OWNER not set in .env; executed local pipeline instead."
+    },
+    {
+      "timestamp": "2026-11-18T18:32:22.362242+00:00",
+      "event_type": "drift-detected",
+      "status": "skipped_unconfigured",
+      "message": "GITHUB_TOKEN or GITHUB_OWNER not set in .env; executed local pipeline instead."
+    }
+  ]
+}
