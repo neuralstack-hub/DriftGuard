@@ -1,8 +1,9 @@
 """DriftGuard FastAPI application entrypoint."""
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.app.config import settings
 from backend.app.routes import auth, datasets, drift, health, models, pipeline, predict, projects
 
 app = FastAPI(
@@ -13,7 +14,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.allowed_frontend_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,12 +22,12 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(health.router)
-app.include_router(projects.router)
-app.include_router(datasets.router)
-app.include_router(predict.router)
-app.include_router(drift.router)
-app.include_router(models.router)
-app.include_router(pipeline.router)
+app.include_router(projects.router, dependencies=[Depends(auth.require_user)])
+app.include_router(datasets.router, dependencies=[Depends(auth.require_user)])
+app.include_router(predict.router, dependencies=[Depends(auth.require_user)])
+app.include_router(drift.router, dependencies=[Depends(auth.require_user)])
+app.include_router(models.router, dependencies=[Depends(auth.require_user)])
+app.include_router(pipeline.router, dependencies=[Depends(auth.require_user)])
 
 
 @app.get("/")

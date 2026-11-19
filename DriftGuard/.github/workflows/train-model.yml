@@ -20,7 +20,8 @@ jobs:
           PYTHONPATH: .
         run: |
           python -c "
-          from backend.app.dependencies import pipeline_service
+          from backend.app.dependencies import get_active_context
+          pipeline_service = get_active_context()[-1]
           res = pipeline_service.bootstrap_v1()
           print(res)
           "
@@ -28,4 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: driftguard-model-v1
-          path: artifacts/models/
+          path: |
+            artifacts/models/
+            artifacts/projects/*/models/
+          if-no-files-found: error

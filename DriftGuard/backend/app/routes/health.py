@@ -1,10 +1,11 @@
 """Health and dashboard overview endpoints."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from backend.app.config import settings
 from backend.app.dependencies import get_active_context, project_service
 from backend.ml.preprocess import load_schema
+from backend.app.routes.auth import require_user
 
 router = APIRouter(prefix="/api", tags=["Overview"])
 
@@ -33,7 +34,7 @@ def health_check():
     }
 
 
-@router.get("/overview")
+@router.get("/overview", dependencies=[Depends(require_user)])
 def get_overview():
     processed_dir, _, registry_service, monitoring_service, _ = get_active_context()
     reg = registry_service.get_registry()

@@ -12,10 +12,17 @@ import PipelineMonitoring from "./pages/PipelineMonitoring";
 import Simulation from "./pages/Simulation";
 import { api } from "./api/client";
 
+const AUTH_REQUIRED = import.meta.env.VITE_AUTH_REQUIRED !== "false";
+
 export default function App() {
   const [authUser, setAuthUser] = useState(() => {
-    const saved = sessionStorage.getItem("driftguard_auth");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem("driftguard_auth") || "null");
+      return saved?.token ? saved : null;
+    } catch {
+      sessionStorage.removeItem("driftguard_auth");
+      return null;
+    }
   });
   const [activePage, setActivePage] = useState("overview");
   const [overview, setOverview] = useState(null);
@@ -24,9 +31,10 @@ export default function App() {
   const [driftData, setDriftData] = useState(null);
   const [pipelineData, setPipelineData] = useState(null);
   const [apiError, setApiError] = useState("");
+  const [workspaceLoaded, setWorkspaceLoaded] = useState(false);
 
   const loadAll = useCallback(async () => {
-    if (!authUser) return;
+    if (AUTH_REQUIRED && !authUser) return;
     try {
       const [ov, pr, md, dr, pl] = await Promise.all([
         api.getOverview(),
@@ -42,7 +50,14 @@ export default function App() {
       setPipelineData(pl);
       setApiError("");
     } catch (err) {
+      if (err.status === 401 && AUTH_REQUIRED) {
+        sessionStorage.removeItem("driftguard_auth");
+        setAuthUser(null);
+        return;
+      }
       setApiError(`Backend unreachable: ${err.message}`);
+    } finally {
+      setWorkspaceLoaded(true);
     }
   }, [authUser]);
 
@@ -52,10 +67,12 @@ export default function App() {
 
   const handleLoginSuccess = (userData) => {
     sessionStorage.setItem("driftguard_auth", JSON.stringify(userData));
+    setWorkspaceLoaded(false);
     setAuthUser(userData);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try { await api.logout(); } catch { /* Clear the local session even if the API is offline. */ }
     sessionStorage.removeItem("driftguard_auth");
     setAuthUser(null);
   };
@@ -70,7 +87,7 @@ export default function App() {
     }
   };
 
-  if (!authUser) {
+  if (AUTH_REQUIRED && !authUser) {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
@@ -116,23 +133,30 @@ export default function App() {
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh
             </button>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 text-xs font-medium text-slate-700 transition"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Logout
-            </button>
+            {AUTH_REQUIRED && <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 text-xs font-medium text-slate-700 transition"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Logout
+              </button>}
           </div>
         </header>
 
         <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
           {apiError && (
-            <div className="mb-6 p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800">
-              {apiError}
+            <div className="mb-6 p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800 flex flex-wrap items-center justify-between gap-3" role="alert">
+              <span>{apiError}</span>
+              <button onClick={loadAll} className="px-3 py-1.5 rounded-md border border-amber-300 bg-white text-xs font-semibold hover:bg-amber-100 transition">Try again</button>
             </div>
           )}
 
+          {!workspaceLoaded ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" role="status">
+              <RefreshCw className="mx-auto mb-3 h-5 w-5 animate-spin text-slate-400" />
+              Loading your workspace…
+            </div>
+          ) : <>
           {activePage === "overview" && (
             <Overview overview={overview} modelsData={modelsData} onRefresh={loadAll} />
           )}
@@ -152,6 +176,7 @@ export default function App() {
             <PipelineMonitoring pipelineData={pipelineData} />
           )}
           {activePage === "simulation" && <Simulation onRefresh={loadAll} />}
+          </>}
         </main>
       </div>
     </div>

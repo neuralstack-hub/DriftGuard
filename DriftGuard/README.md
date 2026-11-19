@@ -91,6 +91,14 @@ Open `http://localhost:5173` in your browser.
 ```bash
 docker compose up --build
 ```
+Compose reads the local `.env` file for backend settings. Create it from `.env.example` before starting the containers.
+
+### Step 6: Deploy the frontend to Vercel
+Import the GitHub repository in Vercel and set the project **Root Directory** to `frontend`. The Vercel config uses `npm ci`, `npm run build`, and `dist` for the output. Add `VITE_API_BASE_URL` as a Vercel environment variable pointing to the deployed FastAPI backend. Add the Vercel production and preview origins to the backend's `FRONTEND_ORIGINS` setting. The backend must be hosted separately; `localhost:8000` only works on your development machine.
+
+### Authentication notes
+- Sign-in uses a regular username and password; there is no OTP step. Configure `APP_ADMIN_USER` and a strong `APP_ADMIN_PASSWORD` in `.env`.
+- Sessions expire after 12 hours and are cleared when the backend restarts. The local JSON user store and in-memory sessions suit a single-process demo; a public deployment should use managed identity/session storage and set `FRONTEND_ORIGINS` to the deployed frontend origin(s).
 
 ---
 

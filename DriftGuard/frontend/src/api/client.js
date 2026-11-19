@@ -1,10 +1,24 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") ||
+  (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 async function request(path, options = {}) {
+  if (!API_BASE) {
+    throw new Error("Backend URL is not configured. Set VITE_API_BASE_URL in the Vercel project settings.");
+  }
   const isFormData = options.body instanceof FormData;
   const headers = isFormData
     ? { ...(options.headers || {}) }
     : { "Content-Type": "application/json", ...(options.headers || {}) };
+
+  const isPublicAuthRequest = path === "/api/auth/login";
+  if (!isPublicAuthRequest) {
+    try {
+      const savedAuth = JSON.parse(sessionStorage.getItem("driftguard_auth") || "null");
+      if (savedAuth?.token) headers.Authorization = `Bearer ${savedAuth.token}`;
+    } catch {
+      sessionStorage.removeItem("driftguard_auth");
+    }
+  }
 
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -12,7 +26,9 @@ async function request(path, options = {}) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.detail || `Request failed (${res.status})`);
+    const error = new Error(data.detail || `Request failed (${res.status})`);
+    error.status = res.status;
+    throw error;
   }
   return data;
 }
@@ -20,6 +36,7 @@ async function request(path, options = {}) {
 export const api = {
   login: (username, password) =>
     request("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }),
+  logout: () => request("/api/auth/logout", { method: "POST" }),
   getOverview: () => request("/api/overview"),
   getProjects: () => request("/api/projects"),
   activateProject: (projectId) => request(`/api/projects/${projectId}/activate`, { method: "POST" }),

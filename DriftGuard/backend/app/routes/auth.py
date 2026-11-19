@@ -1,13 +1,24 @@
-"""Authentication endpoint for DriftGuard dashboard login."""
+"""Username/password authentication and bearer-session management."""
 
-import hashlib
-import hmac
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 from backend.app.config import settings
+from backend.app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
+auth_service = AuthService()
+
+
+def require_user(authorization: str | None = Header(default=None)):
+    if not settings.authentication_enabled:
+        return {"username": "local-developer", "role": "Developer"}
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Sign in to continue.")
+    session = auth_service.get_session(authorization[7:].strip())
+    if not session:
+        raise HTTPException(status_code=401, detail="Your session expired. Please sign in again.")
+    return session
 
 
 class LoginRequest(BaseModel):
@@ -17,14 +28,14 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 def login(req: LoginRequest):
-    user_ok = hmac.compare_digest(req.username.strip(), settings.admin_user)
-    pass_ok = hmac.compare_digest(req.password, settings.admin_password)
-    if not (user_ok and pass_ok):
-        raise HTTPException(status_code=401, detail="Invalid username or password.")
+    try:
+        return auth_service.authenticate(req.username, req.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
 
-    token = hashlib.sha256(f"{settings.admin_user}:{settings.admin_password}".encode("utf-8")).hexdigest()
-    return {
-        "token": token,
-        "username": settings.admin_user,
-        "role": "MLOps Engineer",
-    }
+
+@router.post("/logout")
+def logout(authorization: str | None = Header(default=None)):
+    if authorization and authorization.startswith("Bearer "):
+        auth_service.revoke_session(authorization[7:].strip())
+    return {"status": "signed_out"}

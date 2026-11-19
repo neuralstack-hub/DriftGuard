@@ -2,8 +2,11 @@
 
 import io
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 
+from backend.app.config import settings
 from backend.app.main import app
 
 
@@ -11,13 +14,31 @@ class TestAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = TestClient(app)
+        response = cls.client.post(
+            "/api/auth/login",
+            json={"username": settings.admin_user, "password": settings.admin_password},
+        )
+        assert response.status_code == 200
+        cls.headers = {"Authorization": f"Bearer {response.json()['token']}"}
+
+    def test_dashboard_api_requires_a_session(self):
+        with patch("backend.app.routes.auth.settings", SimpleNamespace(authentication_enabled=True)):
+            response = self.client.get("/api/overview")
+        self.assertEqual(response.status_code, 401)
+
+    def test_logout_revokes_the_session(self):
+        response = self.client.post("/api/auth/logout", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        with patch("backend.app.routes.auth.settings", SimpleNamespace(authentication_enabled=True)):
+            response = self.client.get("/api/overview", headers=self.headers)
+        self.assertEqual(response.status_code, 401)
 
     def test_health_and_overview(self):
         r_health = self.client.get("/api/health")
         self.assertEqual(r_health.status_code, 200)
         self.assertEqual(r_health.json()["status"], "ok")
 
-        r_overview = self.client.get("/api/overview")
+        r_overview = self.client.get("/api/overview", headers=self.headers)
         self.assertEqual(r_overview.status_code, 200)
         data = r_overview.json()
         self.assertIn("total_monitored_models", data)
@@ -25,15 +46,15 @@ class TestAPI(unittest.TestCase):
         self.assertIn("active_schema", data)
 
     def test_list_models_and_pipeline_history(self):
-        r_models = self.client.get("/api/models")
+        r_models = self.client.get("/api/models", headers=self.headers)
         self.assertEqual(r_models.status_code, 200)
         self.assertIn("versions", r_models.json())
 
-        r_hist = self.client.get("/api/pipeline/history")
+        r_hist = self.client.get("/api/pipeline/history", headers=self.headers)
         self.assertEqual(r_hist.status_code, 200)
         self.assertIn("retraining_history", r_hist.json())
 
-        r_drift = self.client.get("/api/drift/history")
+        r_drift = self.client.get("/api/drift/history", headers=self.headers)
         self.assertEqual(r_drift.status_code, 200)
         self.assertIn("history", r_drift.json())
 
@@ -41,6 +62,7 @@ class TestAPI(unittest.TestCase):
         csv_bytes = b"area,bedrooms,city,price\n1200,2,Pune,50\n1500,3,Mumbai,85\n"
         res = self.client.post(
             "/api/datasets/inspect",
+            headers=self.headers,
             files={"file": ("housing.csv", io.BytesIO(csv_bytes), "text/csv")},
         )
         self.assertEqual(res.status_code, 200)

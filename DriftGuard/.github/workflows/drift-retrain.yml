@@ -22,7 +22,8 @@ jobs:
           PYTHONPATH: .
         run: |
           python -c "
-          from backend.app.dependencies import pipeline_service
+          from backend.app.dependencies import get_active_context
+          pipeline_service = get_active_context()[-1]
           pipeline_service.bootstrap_v1()
           outcome = pipeline_service.trigger_retraining(trigger_reason='github_actions_dispatch')
           print('Decision:', outcome['decision'])
