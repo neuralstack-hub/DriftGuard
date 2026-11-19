@@ -62,18 +62,19 @@ class RegistryService:
         training_samples: int,
         status: str = "candidate",
         notes: str = "",
+        feature_importance: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         reg = self._read_registry()
         record = {
             "version": version,
             "trained_at": datetime.now(timezone.utc).isoformat(),
             "metrics": metrics,
+            "feature_importance": feature_importance or [],
             "status": status,
             "artifact_path": artifact_path,
             "training_samples": training_samples,
             "notes": notes,
         }
-        # Never overwrite an existing approved model entry
         existing = [v for v in reg["versions"] if v["version"] == version]
         if existing:
             raise ValueError(f"Model version '{version}' already exists and cannot be overwritten.")

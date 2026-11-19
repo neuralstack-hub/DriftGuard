@@ -1,0 +1,116 @@
+{
+  "drift_history": [
+    {
+      "timestamp": "2026-11-19T13:43:27.223890+00:00",
+      "dataset_drift_detected": true,
+      "drift_score": 0.6667,
+      "drift_threshold": 0.3,
+      "drifted_features_count": 2,
+      "total_features_monitored": 3,
+      "reference_samples": 76,
+      "current_samples": 26,
+      "features": [
+        {
+          "feature": "Home",
+          "ks_statistic": 1.0,
+          "p_value": 0.0,
+          "psi": 8.1854,
+          "wasserstein_distance": 51.0,
+          "reference_mean": 38.5,
+          "current_mean": 89.5,
+          "reference_std": 21.937,
+          "current_std": 7.5,
+          "drift_detected": true
+        },
+        {
+          "feature": "Price",
+          "ks_statistic": 0.2945,
+          "p_value": 0.05442,
+          "psi": 1.1594,
+          "wasserstein_distance": 13419.5344,
+          "reference_mean": 127588.158,
+          "current_mean": 141007.692,
+          "reference_std": 25705.508,
+          "current_std": 26220.66,
+          "drift_detected": true
+        },
+        {
+          "feature": "Bedrooms",
+          "ks_statistic": 0.0445,
+          "p_value": 1.0,
+          "psi": 0.0119,
+          "wasserstein_distance": 0.0769,
+          "reference_mean": 3.026,
+          "current_mean": 3.077,
+          "reference_std": 0.725,
+          "current_std": 0.675,
+          "drift_detected": false
+        }
+      ],
+      "note": "Data drift indicates input distribution shift; model performance degradation requires labelled validation.",
+      "evidently_used": false,
+      "source": "production_stream"
+    },
+    {
+      "timestamp": "2026-11-19T13:43:43.936339+00:00",
+      "dataset_drift_detected": true,
+      "drift_score": 1.0,
+      "drift_threshold": 0.3,
+      "drifted_features_count": 3,
+      "total_features_monitored": 3,
+      "reference_samples": 76,
+      "current_samples": 76,
+      "features": [
+        {
+          "feature": "Home",
+          "ks_statistic": 0.5132,
+          "p_value": 0.0,
+          "psi": 3.6141,
+          "wasserstein_distance": 33.203,
+          "reference_mean": 38.5,
+          "current_mean": 71.703,
+          "reference_std": 21.937,
+          "current_std": 23.179,
+          "drift_detected": true
+        },
+        {
+          "feature": "Price",
+          "ks_statistic": 0.5526,
+          "p_value": 0.0,
+          "psi": 2.2329,
+          "wasserstein_distance": 35600.1157,
+          "reference_mean": 127588.158,
+          "current_mean": 91988.042,
+          "reference_std": 25705.508,
+          "current_std": 26036.616,
+          "drift_detected": true
+        },
+        {
+          "feature": "Bedrooms",
+          "ks_statistic": 0.6579,
+          "p_value": 0.0,
+          "psi": 0.4348,
+          "wasserstein_distance": 1.0845,
+          "reference_mean": 3.026,
+          "current_mean": 4.111,
+          "reference_std": 0.725,
+          "current_std": 0.739,
+          "drift_detected": true
+        }
+      ],
+      "note": "Data drift indicates input distribution shift; model performance degradation requires labelled validation.",
+      "evidently_used": false,
+      "source": "simulation(intensity=1.2)"
+    }
+  ],
+  "retraining_history": [],
+  "deployment_logs": [
+    {
+      "timestamp": "2026-11-19T13:42:23.921497+00:00",
+      "version": "v1",
+      "action": "deploy_custom_dataset",
+      "details": "Trained v1 on 'house-prices' (128 rows, RMSE=0.9746)"
+    }
+  ],
+  "github_actions_runs": []
+}

@@ -26,8 +26,8 @@ export default function ModelManagement({ modelsData, onRefresh }) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white">Model Management</h2>
-          <p className="text-sm text-slate-400">
+          <h2 className="text-2xl font-bold text-slate-900">Model Management</h2>
+          <p className="text-sm text-slate-500">
             Version history, candidate evaluation, promotion, rejection, and rollback
           </p>
         </div>
@@ -35,14 +35,14 @@ export default function ModelManagement({ modelsData, onRefresh }) {
           <button
             onClick={() => runAction(() => api.triggerRetrain({ trigger_reason: "manual_retrain" }), "Manual Retrain")}
             disabled={busy}
-            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-sm font-medium text-white"
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-sm font-medium text-white shadow-sm"
           >
             Train Candidate Model
           </button>
           <button
             onClick={() => runAction(() => api.rollbackModel({ reason: "Dashboard rollback" }), "Rollback")}
             disabled={busy}
-            className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-sm font-medium text-white"
+            className="px-4 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 text-sm font-medium text-slate-700 shadow-sm"
           >
             Rollback to Previous
           </button>
@@ -50,14 +50,14 @@ export default function ModelManagement({ modelsData, onRefresh }) {
       </div>
 
       {msg && (
-        <div className="p-3 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200">
+        <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-sm text-blue-800">
           {msg}
         </div>
       )}
 
-      <div className="bg-[#111827] border border-slate-800 rounded-xl p-5 overflow-x-auto">
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs uppercase text-slate-400 border-b border-slate-800">
+          <thead className="text-xs uppercase text-slate-500 border-b border-slate-200">
             <tr>
               <th className="py-2.5 pr-4">Version</th>
               <th className="py-2.5 pr-4">Trained At</th>
@@ -69,31 +69,31 @@ export default function ModelManagement({ modelsData, onRefresh }) {
               <th className="py-2.5">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/80">
+          <tbody className="divide-y divide-slate-200">
             {versions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-8 text-center text-slate-400">
+                <td colSpan={8} className="py-8 text-center text-slate-500">
                   No model versions registered yet.
                 </td>
               </tr>
             ) : (
               [...versions].reverse().map((v) => (
                 <tr key={v.version}>
-                  <td className="py-3 pr-4 font-semibold text-white">{v.version}</td>
-                  <td className="py-3 pr-4 text-xs text-slate-400">{v.trained_at.slice(0, 19)}</td>
-                  <td className="py-3 pr-4 text-slate-200">{v.metrics?.mae}</td>
-                  <td className="py-3 pr-4 text-slate-200">{v.metrics?.rmse}</td>
-                  <td className="py-3 pr-4 text-slate-200">{v.metrics?.r2}</td>
+                  <td className="py-3 pr-4 font-semibold text-slate-900">{v.version}</td>
+                  <td className="py-3 pr-4 text-xs text-slate-500">{v.trained_at.slice(0, 19)}</td>
+                  <td className="py-3 pr-4 text-slate-700">{v.metrics?.mae}</td>
+                  <td className="py-3 pr-4 text-slate-700">{v.metrics?.rmse}</td>
+                  <td className="py-3 pr-4 text-slate-700">{v.metrics?.r2}</td>
                   <td className="py-3 pr-4">
                     <StatusBadge status={v.status} />
                   </td>
-                  <td className="py-3 pr-4 text-xs text-slate-400 max-w-xs truncate">{v.notes}</td>
+                  <td className="py-3 pr-4 text-xs text-slate-500 max-w-xs truncate">{v.notes}</td>
                   <td className="py-3 flex gap-2">
                     {v.version !== activeVersion && (
                       <button
                         onClick={() => runAction(() => api.promoteModel(v.version), `Promote ${v.version}`)}
                         disabled={busy}
-                        className="px-2.5 py-1 rounded bg-emerald-600/80 hover:bg-emerald-500 text-xs text-white"
+                        className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-xs font-medium text-white"
                       >
                         Promote
                       </button>
@@ -102,7 +102,7 @@ export default function ModelManagement({ modelsData, onRefresh }) {
                       <button
                         onClick={() => runAction(() => api.rejectModel(v.version), `Reject ${v.version}`)}
                         disabled={busy}
-                        className="px-2.5 py-1 rounded bg-rose-600/80 hover:bg-rose-500 text-xs text-white"
+                        className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-xs font-medium text-white"
                       >
                         Reject
                       </button>

@@ -1,13 +1,13 @@
-"""Shared service singletons for FastAPI dependency injection."""
+"""Shared service singletons and project-scoped service resolver."""
 
-from backend.app.config import settings
-from backend.app.services.monitoring_service import MonitoringService
 from backend.app.services.pipeline_service import PipelineService
-from backend.app.services.registry_service import RegistryService
+from backend.app.services.project_service import ProjectService
 
-registry_service = RegistryService(settings.artifacts_models_dir)
-monitoring_service = MonitoringService(
-    settings.artifacts_monitoring_dir,
-    settings.data_processed_dir,
-)
-pipeline_service = PipelineService(registry_service, monitoring_service)
+project_service = ProjectService()
+
+
+def get_active_context():
+    """Return (processed_dir, models_dir, registry_service, monitoring_service, pipeline_service)."""
+    processed_dir, models_dir, registry, monitoring = project_service.get_services()
+    pipeline = PipelineService(registry, monitoring, processed_dir=processed_dir, models_dir=models_dir)
+    return processed_dir, models_dir, registry, monitoring, pipeline

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 
-from backend.app.dependencies import monitoring_service, pipeline_service, registry_service
+from backend.app.dependencies import get_active_context
 from backend.app.schemas.models import RetrainRequest
 
 router = APIRouter(prefix="/api/pipeline", tags=["Pipeline Monitoring"])
@@ -10,6 +10,7 @@ router = APIRouter(prefix="/api/pipeline", tags=["Pipeline Monitoring"])
 
 @router.post("/retrain")
 def trigger_retrain(req: RetrainRequest):
+    _, _, _, _, pipeline_service = get_active_context()
     try:
         return pipeline_service.trigger_retraining(
             n_estimators=req.n_estimators,
@@ -27,6 +28,7 @@ def trigger_retrain(req: RetrainRequest):
 
 @router.get("/history")
 def get_pipeline_history():
+    _, _, registry_service, monitoring_service, _ = get_active_context()
     hist = monitoring_service.get_history()
     reg = registry_service.get_registry()
     return {

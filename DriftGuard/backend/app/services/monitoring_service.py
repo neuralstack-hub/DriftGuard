@@ -3,13 +3,14 @@
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, Optional
 
 import httpx
 import pandas as pd
 
 from backend.app.config import settings
 from backend.ml.drift_detection import detect_data_drift, generate_drifted_sample
+from backend.ml.preprocess import load_schema
 
 
 class MonitoringService:
@@ -58,19 +59,27 @@ class MonitoringService:
         hist["retraining_history"].append(record)
         self._write_history(hist)
 
-    def run_drift_check(self, current_df: pd.DataFrame, source: str = "production_check") -> Dict[str, Any]:
+    def run_drift_check(
+        self,
+        current_df: pd.DataFrame,
+        source: str = "production_check",
+        features: Optional[list] = None,
+    ) -> Dict[str, Any]:
         ref_path = self.processed_dir / "reference_train.csv"
         if not ref_path.exists():
             raise FileNotFoundError(
-                "Reference training dataset not found. Train Model v1 or preprocess data first."
+                "Reference training dataset not found. Train Model v1 or upload a dataset first."
             )
         ref_df = pd.read_csv(ref_path)
+        schema = load_schema(self.processed_dir)
+        monitored = features or schema.get("numeric_drift_features")
         result = detect_data_drift(
             reference_df=ref_df,
             current_df=current_df,
             drift_threshold=settings.drift_threshold,
             ks_alpha=settings.ks_alpha,
             psi_threshold=settings.psi_threshold,
+            features=monitored,
         )
         result["source"] = source
 
@@ -83,11 +92,22 @@ class MonitoringService:
         ref_path = self.processed_dir / "reference_train.csv"
         if not ref_path.exists():
             raise FileNotFoundError(
-                "Reference training dataset not found. Train Model v1 or preprocess data first."
+                "Reference training dataset not found. Train Model v1 or upload a dataset first."
             )
         ref_df = pd.read_csv(ref_path)
-        drifted_df = generate_drifted_sample(ref_df, n_samples=n_samples, intensity=intensity)
-        return self.run_drift_check(drifted_df, source=f"simulation(intensity={intensity})")
+        schema = load_schema(self.processed_dir)
+        monitored = schema.get("numeric_drift_features")
+        drifted_df = generate_drifted_sample(
+            ref_df,
+            n_samples=n_samples,
+            intensity=intensity,
+            features=monitored,
+        )
+        return self.run_drift_check(
+            drifted_df,
+            source=f"simulation(intensity={intensity})",
+            features=monitored,
+        )
 
     def trigger_github_actions(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """

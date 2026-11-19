@@ -1,0 +1,21 @@
+{
+  "target_column": "Offers",
+  "raw_features": [
+    "Home",
+    "Price",
+    "Bedrooms"
+  ],
+  "encoded_features": [
+    "Home",
+    "Price",
+    "Bedrooms"
+  ],
+  "numeric_drift_features": [
+    "Home",
+    "Price",
+    "Bedrooms"
+  ],
+  "categorical_categories": {},
+  "is_custom": true,
+  "dataset_name": "house-prices"
+}

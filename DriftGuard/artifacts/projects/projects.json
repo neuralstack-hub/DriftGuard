@@ -1,0 +1,15 @@
+{
+  "active_project": "house-prices",
+  "projects": [
+    {
+      "id": "beijing-pm25",
+      "name": "Beijing PM2.5",
+      "created_at": "2026-11-19T13:41:44.253772+00:00"
+    },
+    {
+      "id": "house-prices",
+      "name": "house-prices",
+      "created_at": "2026-11-19T13:42:22.843313+00:00"
+    }
+  ]
+}

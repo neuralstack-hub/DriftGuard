@@ -25,8 +25,8 @@ export default function ModelMonitoring({ overview, modelsData, driftData }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Model Monitoring</h2>
-        <p className="text-sm text-slate-400">
+        <h2 className="text-2xl font-bold text-slate-900">Model Monitoring</h2>
+        <p className="text-sm text-slate-500">
           Active deployment telemetry, validation metrics, and drift score trajectory
         </p>
       </div>
@@ -45,8 +45,8 @@ export default function ModelMonitoring({ overview, modelsData, driftData }) {
               ? `${activeRecord.metrics.mae} / ${activeRecord.metrics.rmse}`
               : "—"
           }
-          subtitle="Fixed 2014 validation set"
-          accent="sky"
+          subtitle="Fixed validation set"
+          accent="blue"
         />
         <MetricCard
           title="R² Score"
@@ -54,38 +54,38 @@ export default function ModelMonitoring({ overview, modelsData, driftData }) {
           subtitle="Coefficient of determination"
           accent="slate"
         />
-        <div className="bg-[#111827] border border-slate-800 rounded-xl p-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Monitoring Status
           </p>
           <div className="mt-2">
             <StatusBadge status={overview?.drift_status || "STABLE"} />
           </div>
-          <p className="mt-2 text-xs text-slate-400">
+          <p className="mt-2 text-xs text-slate-500">
             Note: Data drift does not automatically mean accuracy has dropped.
           </p>
         </div>
       </div>
 
-      <div className="bg-[#111827] border border-slate-800 rounded-xl p-5">
-        <h3 className="text-base font-semibold text-white mb-4">Drift Score Over Time</h3>
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 className="text-base font-semibold text-slate-900 mb-4">Drift Score Over Time</h3>
         {trendData.length === 0 ? (
-          <p className="text-sm text-slate-400 py-10 text-center">
+          <p className="text-sm text-slate-500 py-10 text-center">
             No drift checks recorded yet. Run a drift check or simulation.
           </p>
         ) : (
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="check" stroke="#94a3b8" />
-                <YAxis domain={[0, 1]} stroke="#94a3b8" />
-                <Tooltip contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="check" stroke="#64748b" />
+                <YAxis domain={[0, 1]} stroke="#64748b" />
+                <Tooltip contentStyle={{ backgroundColor: "#ffffff", borderColor: "#e2e8f0", color: "#0f172a" }} />
                 <Line
                   type="monotone"
                   dataKey="driftScore"
                   name="Drift Score"
-                  stroke="#f43f5e"
+                  stroke="#2563eb"
                   strokeWidth={2}
                 />
                 <Line

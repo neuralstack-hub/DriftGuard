@@ -1,6 +1,6 @@
 """Model evaluation utilities using MAE, RMSE, and R2 on the fixed validation set."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -8,12 +8,18 @@ import pandas as pd
 from backend.ml.preprocess import FEATURE_COLUMNS, TARGET_COLUMN
 
 
-def evaluate_model(model: Any, validation_df: pd.DataFrame) -> Dict[str, float]:
+def evaluate_model(
+    model: Any,
+    validation_df: pd.DataFrame,
+    feature_columns: Optional[List[str]] = None,
+    target_column: str = TARGET_COLUMN,
+) -> Dict[str, float]:
     """Compute MAE, RMSE, and R2 on the fixed validation dataset."""
     from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-    X_val = validation_df[FEATURE_COLUMNS]
-    y_val = validation_df[TARGET_COLUMN].values
+    cols = feature_columns or FEATURE_COLUMNS
+    X_val = validation_df[cols]
+    y_val = validation_df[target_column].values
     preds = model.predict(X_val)
 
     mae = float(mean_absolute_error(y_val, preds))

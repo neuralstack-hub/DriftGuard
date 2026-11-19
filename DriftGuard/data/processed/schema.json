@@ -1,0 +1,44 @@
+{
+  "target_column": "Offers",
+  "raw_features": [
+    "Home",
+    "Price",
+    "SqFt",
+    "Bedrooms",
+    "Bathrooms",
+    "Brick",
+    "Neighborhood"
+  ],
+  "encoded_features": [
+    "Home",
+    "Price",
+    "SqFt",
+    "Bedrooms",
+    "Bathrooms",
+    "Brick_No",
+    "Brick_Yes",
+    "Neighborhood_East",
+    "Neighborhood_North",
+    "Neighborhood_West"
+  ],
+  "numeric_drift_features": [
+    "Home",
+    "Price",
+    "SqFt",
+    "Bedrooms",
+    "Bathrooms"
+  ],
+  "categorical_categories": {
+    "Brick": [
+      "No",
+      "Yes"
+    ],
+    "Neighborhood": [
+      "East",
+      "North",
+      "West"
+    ]
+  },
+  "is_custom": true,
+  "dataset_name": "house-prices"
+}

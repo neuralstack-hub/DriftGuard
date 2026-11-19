@@ -7,6 +7,7 @@ import pandas as pd
 
 from backend.ml.evaluate import evaluate_model, is_candidate_better
 from backend.ml.predict import load_model_bundle
+from backend.ml.preprocess import load_schema
 from backend.ml.train import train_and_save_version
 
 
@@ -33,6 +34,10 @@ def run_retraining_pipeline(
             "Processed splits not found. Run initial training / preprocessing first."
         )
 
+    schema = load_schema(processed_dir)
+    feature_cols = schema["encoded_features"]
+    target_col = schema["target_column"]
+
     ref_df = pd.read_csv(ref_path)
     val_df = pd.read_csv(val_path)
 
@@ -42,21 +47,28 @@ def run_retraining_pipeline(
     else:
         labelled_train_df = ref_df
 
-    # Optionally simulate a degraded candidate (e.g., overly shallow trees) to test rejection gate
     eff_estimators = 5 if simulate_worse_candidate else n_estimators
     eff_depth = 2 if simulate_worse_candidate else max_depth
 
     candidate_info = train_and_save_version(
-        version=next_version,
+        version=next_ver,
         train_df=labelled_train_df,
         validation_df=val_df,
         models_dir=models_dir,
+        feature_columns=feature_cols,
+        target_column=target_col,
+        schema=schema if schema.get("is_custom") else None,
         n_estimators=eff_estimators,
         max_depth=eff_depth,
     )
 
     active_bundle = load_model_bundle(active_artifact_path)
-    active_metrics = evaluate_model(active_bundle["model"], val_df)
+    active_metrics = evaluate_model(
+        active_bundle["model"],
+        val_df,
+        feature_columns=active_bundle.get("features", feature_cols),
+        target_column=active_bundle.get("target", target_col),
+    )
     candidate_metrics = candidate_info["metrics"]
 
     promoted = is_candidate_better(candidate_metrics, active_metrics)
@@ -65,6 +77,7 @@ def run_retraining_pipeline(
         "candidate_version": next_version,
         "candidate_artifact_path": candidate_info["artifact_path"],
         "candidate_metrics": candidate_metrics,
+        "feature_importance": candidate_info.get("feature_importance", []),
         "active_metrics_on_fixed_val": active_metrics,
         "training_samples": candidate_info["training_samples"],
         "validation_samples": len(val_df),

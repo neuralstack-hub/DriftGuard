@@ -15,6 +15,9 @@ class Settings:
     psi_threshold: float = float(os.getenv("PSI_THRESHOLD", "0.20"))
     ks_alpha: float = float(os.getenv("KS_ALPHA", "0.05"))
 
+    admin_user: str = os.getenv("APP_ADMIN_USER", "admin")
+    admin_password: str = os.getenv("APP_ADMIN_PASSWORD", "driftguard123")
+
     data_raw_path: Path = PROJECT_ROOT / os.getenv(
         "DATA_RAW_PATH", "data/raw/PRSA_data_2010.1.1-2014.12.31.csv"
     )

@@ -1,6 +1,6 @@
 {
-  "active_version": "v1",
-  "previous_approved_version": "v4",
+  "active_version": "v8",
+  "previous_approved_version": "v7",
   "versions": [
     {
       "version": "v1",
@@ -10,7 +10,7 @@
         "rmse": 66.1861,
         "r2": 0.4992
       },
-      "status": "active",
+      "status": "archived",
       "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v1.joblib",
       "training_samples": 24418,
       "notes": "Initial baseline RandomForestRegressor trained on 2010-2012 reference data"
@@ -66,6 +66,58 @@
       "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v5.joblib",
       "training_samples": 33096,
       "notes": "Auto-rejected: RMSE 67.2544 >= 66.1861"
+    },
+    {
+      "version": "v6",
+      "trained_at": "2026-11-19T12:11:01.333622+00:00",
+      "metrics": {
+        "mae": 5.754,
+        "rmse": 8.5164,
+        "r2": -62.3529
+      },
+      "status": "archived",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v6.joblib",
+      "training_samples": 26304,
+      "notes": "Custom dataset 'PRSA_data_2010.1.1-2014.12.31' (target=Ir)"
+    },
+    {
+      "version": "v7",
+      "trained_at": "2026-11-19T13:30:03.551948+00:00",
+      "metrics": {
+        "mae": 0.6938,
+        "rmse": 0.8736,
+        "r2": 0.2885
+      },
+      "status": "archived",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v7.joblib",
+      "training_samples": 76,
+      "notes": "Custom dataset 'house-prices' (target=Offers)"
+    },
+    {
+      "version": "v8",
+      "trained_at": "2026-11-19T13:35:39.139172+00:00",
+      "metrics": {
+        "mae": 0.6885,
+        "rmse": 0.8133,
+        "r2": 0.3833
+      },
+      "status": "active",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v8.joblib",
+      "training_samples": 102,
+      "notes": "Auto-promoted: RMSE 0.8133 < 0.8736"
+    },
+    {
+      "version": "v9",
+      "trained_at": "2026-11-19T13:35:49.408462+00:00",
+      "metrics": {
+        "mae": 0.8147,
+        "rmse": 0.9487,
+        "r2": 0.1608
+      },
+      "status": "rejected",
+      "artifact_path": "D:\\DriftGuard\\DriftGuard\\artifacts\\models\\model_v9.joblib",
+      "training_samples": 102,
+      "notes": "Auto-rejected: RMSE 0.9487 >= 0.8133"
     }
   ],
   "rollback_history": [

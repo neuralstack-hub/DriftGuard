@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 
-from backend.app.dependencies import monitoring_service, pipeline_service, registry_service
+from backend.app.dependencies import get_active_context
 from backend.app.schemas.models import RollbackRequest
 
 router = APIRouter(prefix="/api/models", tags=["Model Management"])
@@ -10,12 +10,13 @@ router = APIRouter(prefix="/api/models", tags=["Model Management"])
 
 @router.get("")
 def list_models():
-    reg = registry_service.get_registry()
-    return reg
+    _, _, registry_service, _, _ = get_active_context()
+    return registry_service.get_registry()
 
 
 @router.post("/train-v1")
 def train_initial_model():
+    _, _, _, _, pipeline_service = get_active_context()
     try:
         return pipeline_service.bootstrap_v1()
     except FileNotFoundError as exc:
@@ -26,6 +27,7 @@ def train_initial_model():
 
 @router.post("/{version}/promote")
 def promote_model(version: str):
+    _, _, registry_service, monitoring_service, _ = get_active_context()
     try:
         record = registry_service.promote_version(version, reason="Manually promoted via dashboard")
         monitoring_service.log_deployment(
@@ -40,6 +42,7 @@ def promote_model(version: str):
 
 @router.post("/{version}/reject")
 def reject_model(version: str):
+    _, _, registry_service, monitoring_service, _ = get_active_context()
     try:
         record = registry_service.reject_version(version, reason="Manually rejected via dashboard")
         monitoring_service.log_deployment(
@@ -56,6 +59,7 @@ def reject_model(version: str):
 
 @router.post("/rollback")
 def rollback_model(req: RollbackRequest):
+    _, _, registry_service, monitoring_service, _ = get_active_context()
     try:
         event = registry_service.rollback(target_version=req.target_version, reason=req.reason)
         monitoring_service.log_deployment(

@@ -1,7 +1,7 @@
 """Data drift detection comparing reference training data against incoming production data."""
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -67,7 +67,7 @@ def detect_data_drift(
     drift_threshold: float = 0.30,
     ks_alpha: float = 0.05,
     psi_threshold: float = 0.20,
-    features: List[str] = None,
+    features: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Compare reference training data vs incoming production data across key features.
@@ -75,7 +75,8 @@ def detect_data_drift(
 
     Note: Data drift indicates input distribution shift, NOT automatic accuracy loss.
     """
-    monitored = features or [f for f in DRIFT_FEATURES if f in reference_df.columns and f in current_df.columns]
+    candidate_features = features or DRIFT_FEATURES
+    monitored = [f for f in candidate_features if f in reference_df.columns and f in current_df.columns]
     if not monitored:
         raise ValueError("No overlapping monitored features found between reference and current data.")
 
@@ -85,15 +86,17 @@ def detect_data_drift(
     for col in monitored:
         ref_vals = pd.to_numeric(reference_df[col], errors="coerce").dropna().values
         cur_vals = pd.to_numeric(current_df[col], errors="coerce").dropna().values
+        if len(ref_vals) == 0 or len(cur_vals) == 0:
+            continue
 
         ks_stat, p_value = ks_2samp(ref_vals, cur_vals)
         psi_val = compute_psi(ref_vals, cur_vals)
         w_dist = float(wasserstein_distance(ref_vals, cur_vals))
 
-        ref_mean = float(np.mean(ref_vals)) if len(ref_vals) else 0.0
-        cur_mean = float(np.mean(cur_vals)) if len(cur_vals) else 0.0
-        ref_std = float(np.std(ref_vals)) if len(ref_vals) else 0.0
-        cur_std = float(np.std(cur_vals)) if len(cur_vals) else 0.0
+        ref_mean = float(np.mean(ref_vals))
+        cur_mean = float(np.mean(cur_vals))
+        ref_std = float(np.std(ref_vals))
+        cur_std = float(np.std(cur_vals))
 
         is_drifted = bool((p_value < ks_alpha and psi_val >= psi_threshold) or psi_val >= 0.25)
         if is_drifted:
@@ -114,9 +117,12 @@ def detect_data_drift(
             }
         )
 
-    drift_score = round(drifted_count / len(monitored), 4)
+    if not feature_results:
+        raise ValueError("No valid numeric values found in monitored features.")
+
+    drift_score = round(drifted_count / len(feature_results), 4)
     dataset_drift_detected = drift_score >= drift_threshold
-    evidently_meta = run_evidently_if_available(reference_df, current_df, monitored)
+    evidently_meta = run_evidently_if_available(reference_df, current_df, [f["feature"] for f in feature_results])
 
     return {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -124,7 +130,7 @@ def detect_data_drift(
         "drift_score": drift_score,
         "drift_threshold": drift_threshold,
         "drifted_features_count": drifted_count,
-        "total_features_monitored": len(monitored),
+        "total_features_monitored": len(feature_results),
         "reference_samples": len(reference_df),
         "current_samples": len(current_df),
         "features": feature_results,
@@ -138,22 +144,26 @@ def generate_drifted_sample(
     n_samples: int = 500,
     intensity: float = 1.0,
     seed: int = 42,
+    features: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     """
-    Create a realistic shifted incoming production batch from reference samples
-    by applying controlled meteorological shifts (e.g., warmer season, lower pressure,
-    stronger wind) for drift simulation.
+    Create a shifted incoming production batch from reference samples by applying
+    controlled standard-deviation shifts across monitored numeric features.
     """
     rng = np.random.default_rng(seed)
-    sample = reference_df.sample(n=min(n_samples, len(reference_df)), random_state=seed).copy()
+    sample = reference_df.sample(n=min(n_samples, len(reference_df)), replace=len(reference_df) < n_samples, random_state=seed).copy()
+    target_cols = features or [c for c in DRIFT_FEATURES if c in sample.columns]
 
-    if "TEMP" in sample.columns:
-        sample["TEMP"] = sample["TEMP"] + (9.5 * intensity) + rng.normal(0, 1.5, len(sample))
-    if "DEWP" in sample.columns:
-        sample["DEWP"] = sample["DEWP"] + (7.0 * intensity) + rng.normal(0, 1.2, len(sample))
-    if "PRES" in sample.columns:
-        sample["PRES"] = sample["PRES"] - (12.0 * intensity) + rng.normal(0, 1.0, len(sample))
-    if "Iws" in sample.columns:
-        sample["Iws"] = np.clip(sample["Iws"] * (1.0 + 0.85 * intensity) + (15.0 * intensity), 0, None)
+    for idx, col in enumerate(target_cols):
+        if col not in sample.columns:
+            continue
+        vals = pd.to_numeric(sample[col], errors="coerce")
+        std = float(vals.std()) if vals.std() and not np.isnan(vals.std()) else 1.0
+        if std == 0.0:
+            continue
+        direction = 1.0 if idx % 2 == 0 else -1.0
+        shift = direction * std * 1.15 * intensity
+        noise = rng.normal(0, std * 0.15, len(sample))
+        sample[col] = vals + shift + noise
 
     return sample.reset_index(drop=True)

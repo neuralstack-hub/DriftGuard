@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.routes import drift, health, models, pipeline, predict
+from backend.app.routes import auth, datasets, drift, health, models, pipeline, predict, projects
 
 app = FastAPI(
     title="DriftGuard API",
@@ -19,7 +19,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(health.router)
+app.include_router(projects.router)
+app.include_router(datasets.router)
 app.include_router(predict.router)
 app.include_router(drift.router)
 app.include_router(models.router)
