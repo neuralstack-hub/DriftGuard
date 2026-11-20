@@ -3,6 +3,13 @@ name: Train Initial Model v1
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: DriftGuard
+
 jobs:
   train-v1:
     runs-on: ubuntu-latest
@@ -11,25 +18,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: DriftGuard/backend/requirements.txt
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
       - name: Download UCI Beijing PM2.5 dataset
         run: python scripts/download_dataset.py
-      - name: Train and evaluate Model v1
-        env:
-          PYTHONPATH: .
-        run: |
-          python -c "
-          from backend.app.dependencies import get_active_context
-          pipeline_service = get_active_context()[-1]
-          res = pipeline_service.bootstrap_v1()
-          print(res)
-          "
+      - name: Train and evaluate Model v1 (isolated workspace)
+        run: python scripts/ci_retrain.py --out-dir ci-output
       - name: Upload trained model artifact
         uses: actions/upload-artifact@v4
         with:
           name: driftguard-model-v1
-          path: |
-            artifacts/models/
-            artifacts/projects/*/models/
+          path: DriftGuard/ci-output/
           if-no-files-found: error
