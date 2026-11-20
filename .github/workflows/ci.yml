@@ -1,0 +1,58 @@
+name: DriftGuard CI
+
+# The application lives in the DriftGuard/ subfolder of this repository, so every
+# job runs with that folder as its working directory.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: DriftGuard
+
+jobs:
+  backend-tests:
+    name: Backend tests (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: DriftGuard/backend/requirements.txt
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+      - name: Run unit and integration tests
+        env:
+          PYTHONPATH: .
+        run: pytest backend/tests -v
+
+  frontend-build:
+    name: Frontend build (Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: DriftGuard/frontend/package-lock.json
+      - name: Install and build frontend
+        working-directory: DriftGuard/frontend
+        run: |
+          npm ci
+          npm run build
+
+  docker-build:
+    name: Backend Docker image build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend image (validates the Dockerfile; does not deploy)
+        run: docker build -f backend/Dockerfile -t driftguard-backend:ci .

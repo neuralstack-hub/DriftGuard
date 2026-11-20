@@ -32,3 +32,6 @@ artifacts/models/*.pkl
 .DS_Store
 Thumbs.db
 *.log
+
+# CI output (isolated retrain workspace)
+ci-output/

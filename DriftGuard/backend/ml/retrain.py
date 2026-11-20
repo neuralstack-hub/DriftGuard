@@ -51,7 +51,7 @@ def run_retraining_pipeline(
     eff_depth = 2 if simulate_worse_candidate else max_depth
 
     candidate_info = train_and_save_version(
-        version=next_ver,
+        version=next_version,
         train_df=labelled_train_df,
         validation_df=val_df,
         models_dir=models_dir,

@@ -3,7 +3,7 @@
 import io
 import zipfile
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 UCI_ZIP_URL = "https://archive.ics.uci.edu/static/public/381/beijing+pm2+5+data.zip"
 TARGET_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
@@ -17,7 +17,8 @@ def download_beijing_pm25() -> Path:
         return TARGET_FILE
 
     print(f"Downloading Beijing PM2.5 dataset from {UCI_ZIP_URL} ...")
-    with urlopen(UCI_ZIP_URL, timeout=60) as response:
+    request = Request(UCI_ZIP_URL, headers={"User-Agent": "Mozilla/5.0 (DriftGuard dataset downloader)"})
+    with urlopen(request, timeout=120) as response:
         zip_bytes = response.read()
 
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:

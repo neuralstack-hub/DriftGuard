@@ -1,0 +1,69 @@
+name: Drift-Triggered Retraining & Image Build
+
+# Triggered by the DriftGuard backend via the GitHub REST API:
+#   POST /repos/{owner}/{repo}/dispatches   {"event_type": "drift-detected", "client_payload": {...}}
+# using a fine-grained token that lives ONLY in the backend's environment (GITHUB_TOKEN).
+# Can also be started by hand from the Actions tab.
+on:
+  repository_dispatch:
+    types: [drift-detected]
+  workflow_dispatch:
+    inputs:
+      simulate_worse_candidate:
+        description: "Train a deliberately weak candidate (demonstrates rejection)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: DriftGuard
+
+jobs:
+  retrain-and-evaluate:
+    name: Retrain, evaluate, promote or reject
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: DriftGuard/backend/requirements.txt
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+      - name: Download UCI Beijing PM2.5 dataset
+        run: python scripts/download_dataset.py
+      - name: Bootstrap v1, train candidate, compare on fixed validation set
+        env:
+          WORSE: ${{ inputs.simulate_worse_candidate }}
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          ARGS="--out-dir ci-output --retrain --reason github_actions_${TRIGGER}"
+          if [ "$WORSE" = "true" ]; then ARGS="$ARGS --simulate-worse-candidate"; fi
+          python scripts/ci_retrain.py $ARGS
+      - name: Upload candidate model, registry and decision
+        uses: actions/upload-artifact@v4
+        with:
+          name: driftguard-retrain-result
+          path: DriftGuard/ci-output/
+          if-no-files-found: error
+
+  build-image:
+    name: Build backend Docker image
+    needs: retrain-and-evaluate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend image
+        working-directory: DriftGuard
+        run: docker build -f backend/Dockerfile -t driftguard-backend:${{ github.sha }} .
+      - name: Deployment note
+        run: |
+          {
+            echo "### Image built, not deployed"
+            echo "Building the image only validates the Dockerfile. Deploying requires pushing it to a registry"
+            echo "(e.g. GHCR) and updating a target host. See the README for the local deployment mechanism."
+          } >> "$GITHUB_STEP_SUMMARY"
